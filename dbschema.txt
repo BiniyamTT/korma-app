@@ -1,0 +1,106 @@
+asset_id (integer, PK)
+canonical_ticker (text) — the most recent preferred ticker
+name (text)
+primary_exchange (text)
+currency (text)
+status (text) — active, delisted, merged, renamed
+created_at (timestamp)
+updated_at (timestamp)
+metadata JSON (text) — ticker history, corporate-actions pointer
+
+
+
+From yfinance Data
+
+"meta": {
+    "currency": "USD",
+    "symbol": "TSLA",
+    "exchangeName": "NMS",
+    "fullExchangeName": "NasdaqGS",
+    "instrumentType": "EQUITY",
+    "firstTradeDate": 1277818200,
+    "regularMarketTime": 1764352800,
+    "hasPrePostMarketData": true,
+    "gmtoffset": -18000,
+    "timezone": "EST",
+    "exchangeTimezoneName": "America/New_York",
+    "regularMarketPrice": 430.17,
+    "fiftyTwoWeekHigh": 488.54,
+    "fiftyTwoWeekLow": 214.25,
+    "regularMarketDayHigh": 432.93,
+    "regularMarketDayLow": 426.2,
+    "regularMarketVolume": 36002475,
+    "longName": "Tesla, Inc.",
+    "shortName": "Tesla, Inc.",
+    "chartPreviousClose": 1.267,
+    "priceHint": 2,
+    "currentTradingPeriod": {
+    "pre": {
+        "timezone": "EST",
+        "end": 1764340200,
+        "start": 1764320400,
+        "gmtoffset": -18000
+    },
+    "regular": {
+        "timezone": "EST",
+        "end": 1764352800,
+        "start": 1764340200,
+        "gmtoffset": -18000
+    },
+    "post": {
+        "timezone": "EST",
+        "end": 1764378000,
+        "start": 1764352800,
+        "gmtoffset": -18000
+    }
+    },
+    "dataGranularity": "1d",
+    "range": "100y",
+    "validRanges": [
+    "1d",
+    "5d",
+    "1mo",
+    "3mo",
+    "6mo",
+    "1y",
+    "2y",
+    "5y",
+    "10y",
+    "ytd",
+    "max"
+    ]
+},
+
+assets
+    asset_id (internal primary key)
+    symbol 
+    name
+    shortName
+    exchange
+    fullExchangeName
+    currency
+    quoteType / typeDisp (Equity, ETF, Crypto)
+    sector
+    industry
+    country
+    market (us_market)
+    firstTradeDate
+    website (optional)
+    irWebsite (optional)
+    isTradeable
+    status (active or delisted)
+    created_at, updated_at
+
+
+historical_prices_adj
+    price_id (PK)
+    asset_id (FK)
+    date
+    open
+    high
+    low
+    close
+    adj_close 
+    volume
+    source 
+    ingested_at

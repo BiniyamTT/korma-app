@@ -1,0 +1,27 @@
+Week 1 — Data Spine
+    Finalize:
+        Assets table
+        Raw prices table
+
+    Ingest:
+        10–20 assets
+        5–10 years of data
+
+    Validate:
+        No missing dates
+        No broken tickers
+
+Week 2 — DuckDB Basics
+    Read SQLite from DuckDB
+    Compute:
+        Daily returns
+        ATR
+        20-day realized vol
+        Store into feature tables
+
+Week 3 — Introduce FastAPI
+    Health endpoint
+    Asset list endpoint
+    Feature query endpoint
+
+Always run ingestion after midnight UTC → flawless.

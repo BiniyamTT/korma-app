@@ -1,0 +1,74 @@
+Delete the whole db, reinitialize it, i have made the change in the parse_payload(data) function to not include todays data because it will not reflect the whole trading days price actions depending on the time of call so i made the change to remove 1 from the range length on line 115 at ingest_assets.py to this 
+for i in range(len(timestamps)-1) - Is that the right implementation? 
+
+Now the other major change i want you to make is lets try to modularize the data ingestion pipeline. So that when a user wants to ingest an asset we have to know if it is the first time of ingestion or not and the way we know that is by checking if the asset symbol is present on the assets table. If it exists then its not the first time. If it does not then this is the first time which means we run the get_symbol_info() and insert it to the assets table. 
+
+New Ingestion Job = (asset doesnot exist on assets table) -> Get Asset info -> Add it to Assets table on the db -> Get asset id from assets table ->Ingest historical prices data -> Add it to the historical_prices_adj table. 
+
+So what if its not a new asset. So it really means update the db to include the price data from when the last ingest job was done to now. Then I need the following processes to run
+
+Old ingestion job = (asset exists on assets table) = update asset ->  Get asset id from assets table -> Update the historical data. 
+
+Now the Update historical data shall encompass the following: and I need it to be a separate function that recieves asset symbol and lastdate.
+And this function will be called once a day (middle of the night from where i am @UTC+3) so that it updates all the assets on the asset table and keep a fresh data.
+So it runs in loop updating all assets.
+
+1. Get the latest price available on db for the asset, (i.e the last date for which prices exist coming from historical_prices_adj table)
+2. Using the same headers to emulate a real browser call, Use the following pattern url to request the "new" data
+https://query1.finance.yahoo.com/v8/finance/chart/META?period1=1764709200&period2=1764881999&interval=1d
+where period1 = the last date from step 1 converted into the current epoch unix timestamp and 
+where period2 = yesterday converted into the current epoch unix timestamp because of the prior logic - todays data will not reflect the full day's price actions. 
+3. Update the historical_prices_adj table.
+
+I think this will along the way avoids injestion errors that come from the code by the way of
+ symbol = get_symbol()
+    if is_symbol_in_db(symbol) == False:
+
+That were occuring when trying to ingest prices for an asset that already exists on the assets table. 
+
+Also i have renamed get_hist_data_adj to get_hist_prices_adj
+
+The other major thing is we need to define other functions, so as to fulfill the full crud for the data, we have taken care of the create and update part, so now we need the remaining two. I need a function that reads the data from both the assets and historical_prices_adj table values for one or more assets that will be passed to it. 
+I also need a function that deletes data from both tables, first from historical prices then from assets table, so that whenever the asset is deleted it recursively deletes everything related to it. 
+
+
+What do you think of this job, before you do anything CONSULT ME> NO AUTOMATED JOBS YET> DONT DO ANYTHING UNLESS I EXPLICITLY TELL YOU TO DO. ASK FIRST BEFORE IMPLEMENTATION.
+
+================================================================================================================
+
+I will give you a list of symbols for batch ingestion after some minor fixes to the ingest_assets.py file 
+
+You previously created the schema, but this script assumes the tables exist.
+It will break on a fresh environment unless the schema is created separately.
+
+Add:
+def ensure_schema():
+    ...
+Your DB stores dates as strings "YYYY-MM-DD".
+Parsing logic is good, but writing datetime.utcnow() in insert_prices() stores a Python datetime object → SQLite stores it as ISO but sometimes as blob depending on driver.
+
+Store as string explicitly:
+datetime.utcnow().isoformat()
+
+Also I am getting depreciation warnings for the utc module 
+For example on line 78 i have the following warning. 
+The method "utcnow" in class "datetime" is deprecated
+  Use timezone-aware objects to represent datetimes in UTC; e.g. by calling .now(datetime.timezone.utc)Pylance
+(method) def utcnow() -> datetime
+Construct a UTC datetime from time.time().
+Use the datetime timezone aware objects to avoid the multiple warnings.
+
+When Yahoo rate-limits (very common), ingestion will fail silently.
+Add at least 1 retry.
+
+read_asset_data()
+Works but returns raw DB rows, switch to dictionaries for easier use.
+
+delete_asset()
+Deletes without confirmation.
+If run accidentally… bye-bye.
+Better:add a confirmation logic
+confirm = input("Type DELETE to confirm: ")
+
+And then I want to add a robust logging framework for the terminal - i have used winston for logging in previous node.js works, is there any you recommend for python that is robust and easy to use. Also if you do please implement loggers on each step and save to file, all_logs and error_logs. one more thing parse_price_payload silently drops rows with None
+This is correct, but you should log dropped indices to see when debugging.
