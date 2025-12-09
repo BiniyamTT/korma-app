@@ -1,0 +1,16 @@
+[theme]
+# Base theme to inherit from
+base = "dark"
+
+# Primary color (blue accent)
+primaryColor = "#3b82f6"
+
+# Background colors
+backgroundColor = "#09090b"
+secondaryBackgroundColor = "#18181b"
+
+# Text color
+textColor = "#fafafa"
+
+# Font
+font = "sans serif"

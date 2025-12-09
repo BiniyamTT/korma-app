@@ -1,0 +1,23 @@
+Structuring SQL Queries
+
+I'm working on moving the SQL queries from dashboard.py into separate files. So far, I've identified two key queries embedded in the file: get_all_assets and a second one I'm still figuring out. I'm aiming for consistency with existing SQL files and want a more organized approach to manage these queries.
+
+Categorizing SQL Operations
+
+I'm now classifying the SQL operations. I've expanded the scope to include queries related to groups, assets, and overall data. Read queries and basic CRUD operations need separation. Large queries, particularly get_overview_data, and computed metrics fetchers warrant individual .sql files for clarity and maintainability. I'm leaning toward a new module or a dedicated SQL file collection.
+
+Deciding Query Execution Logic
+
+I've been assessing the best way to execute these queries. I'm leaning towards backend/dashboard_services.py to house functions like get_all_assets(), and that module will handle running SQL queries. This aligns with the user's idea of "running db functions based on the sqls elsewhere". Complex queries will go into separate .sql files, particularly get_overview_data. Simpler queries might stay within backend/dashboard_services.py if they're easy to manage.
+
+Defining Data Access Layer
+
+I'm now establishing a dedicated data access layer. I'm focusing on the creation of backend/data_service.py to centralize the get_, create_, and delete_ functions. This centralizes the data access layer, helping to reduce clutter in dashboard.py. Complex SQL, like the overview queries, will live in their own .sql files, specifically fetch_asset_overview.sql and fetch_group_overview.sql. I'm verifying the complex queries, specifically the DuckDB pivot query. Then, I will modify backend/data_service.py to load these new SQL files.
+
+Organizing Data Fetchers
+
+I'm now restructuring backend/data_service.py to centralize all data fetching functions, keeping dashboard.py focused on the UI. The "Overview" data retrieval, previously in dashboard.py, will be moved to a separate file, and functions like get_overview_data will be created within the new file. I will also incorporate the refactor request into this step, extracting all the functions listed. This step addresses two user requests simultaneously.
+
+Verifying Data Integrity
+
+I'm checking that the available_assets_for_group query is working correctly. It is now stored in the appropriate file location, and I am ensuring that the retrieval process functions as expected. I am confident that the previous changes in data access and structuring have not adversely affected this vital query.

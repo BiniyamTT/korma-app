@@ -72,3 +72,13 @@ confirm = input("Type DELETE to confirm: ")
 
 And then I want to add a robust logging framework for the terminal - i have used winston for logging in previous node.js works, is there any you recommend for python that is robust and easy to use. Also if you do please implement loggers on each step and save to file, all_logs and error_logs. one more thing parse_price_payload silently drops rows with None
 This is correct, but you should log dropped indices to see when debugging.
+
+
+Also on the same note on the group metrics TimeSeries tab, the chart takes a bit long time to draw i think it is related with the backend plotly because the data points are a lot. However, is there any way we can make this faster, maybe display the table first, run the chart in the background and maybe add a button that says "See Chart" and if a user clicks on the button displays it much faster. 
+
+What do you think, without implementation of code or command?
+
+
+Now, I need one more page to add called 'Overview',that should be the homepage at localhost:8501, with a selection for Assets or Groups that shows a table with the follwoing format -  columns are listed below:
+Assets Table: Name,Symbol,Class(taken from korma-db assets table quoteType col),Industry,Sector,[Header column:'Realized Volatility'- (i.e.- the close to close returns 1std.dev in %), Sub-columns: 1d,1w,1m,1q,1y],[Header column:'Simple ATRP'-(i.e. simple_atrp 1std.dev in %)- Sub-columns: 1d,1w,1m,1q,1y],[Header column:'ATRP'-(i.e. real_atrp 1std.dev in %), Sub-columns: 1d,1w,1m,1q,1y]
+Groups Table:Name,Description,Constituents,[Header column:'Realized Volatility'- (i.e.- the close to close returns 1std.dev in %), Sub-columns: 1d,1w,1m,1q,1y],[Header column:'Simple ATRP'-(i.e. simple_atrp 1std.dev in %)- Sub-columns: 1d,1w,1m,1q,1y],[Header column:'ATRP'-(i.e. real_atrp 1std.dev in %), Sub-columns: 1d,1w,1m,1q,1y]
